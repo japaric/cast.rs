@@ -1,0 +1,5 @@
+[package]
+
+name = "cast"
+version = "0.0.0"
+authors = ["Jorge Aparicio <japaricious@gmail.com>"]

@@ -30,7 +30,7 @@ pub trait CastFrom<Src> {
 
 /// The "casting to" operation
 pub trait CastTo {
-    fn to<Dst: CastFrom<Self>>(self) -> Dst::Output {
+    fn to<Dst>(self) -> Dst::Output where Dst: CastFrom<Self> {
         Dst::from(self)
     }
 }

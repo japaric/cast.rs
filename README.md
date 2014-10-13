@@ -14,13 +14,14 @@ do all these operations:
 
 ``` rust
 // Promotion
+// These casts always succeed, no need to return `Option`/`Result`
 assert_eq!(0u8.to::<u16>(), 0u16);  // "casting to" operation
 assert_eq!(f64::from(0f32), 0f64);  // "casting from" operation
 
 // "Half" promotion
 // e.g. i8 -> u16 can *only* underflow
 assert_eq!(127i8.to::<u16>(), Ok(127u16));
-assert_eq!(-128i8.to::<u16>(), Err(Underflow));
+assert_eq!(-1i8.to::<u16>(), Err(Underflow));
 
 // From unsigned
 // e.g. u16 -> u8 can *only* overflow
@@ -50,7 +51,7 @@ This is the list of blockers:
 
 - Associated types
 - Namespaced enums (optional, can be worked around)
-- UFCS (also optional, but highly desired)
+- UFCS (also optional, but highly desired, e.g. `CastFrom::from` vs `u8::from`)
 
 # Generic programming
 

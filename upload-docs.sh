@@ -3,7 +3,7 @@ cd target/doc
 git init
 git config user.name "Jorge Aparicio"
 git config user.email "japaricious@gmail.com"
-git remote add origin "https://$GH_TOKEN@github.com/japaric/onezero.rs"
+git remote add origin "https://$GH_TOKEN@github.com/japaric/cast.rs"
 
 git checkout -b gh-pages
 git add -A

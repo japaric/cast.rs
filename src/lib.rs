@@ -22,7 +22,7 @@
 //! `Option` and incurs in unnecessary bounds checking under the hood. Whereas the `CastTo` version
 //! is equivalent to a built-in cast operation: `0u8 as u16`.
 //!
-//! For other casting operations that are "lossy", the `CastTo` version returns a `Result`, where
+//! For other cast operations that are "lossy", the `CastTo` version returns a `Result`, where
 //! the `Err` variant explains the error.
 //!
 //! ```
@@ -110,7 +110,7 @@ pub enum Error {
 /// The result of a cast operation
 pub type Result<T> = ::std::result::Result<T, Error>;
 
-/// The "casting from" operation
+/// The "cast from" operation
 pub trait CastFrom<Source> {
     /// The result of the cast operation: either `Self` or `Result<Self>`
     type Output;
@@ -122,7 +122,7 @@ pub trait CastFrom<Source> {
     fn from(Source, Option<Self>) -> Self::Output;
 }
 
-/// The "casting to" operation
+/// The "cast to" operation
 pub trait CastTo: Sized {
     /// Checked cast from `Self` to `Destination`
     fn to<Destination: CastFrom<Self>>(self) -> <Destination as CastFrom<Self>>::Output {

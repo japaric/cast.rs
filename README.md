@@ -1,3 +1,5 @@
+[![Build Status][status]](https://travis-ci.org/japaric/cast.rs)
+
 # `cast.rs`
 
 Machine scalar casting that meets your expectations:

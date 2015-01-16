@@ -54,8 +54,8 @@
 //! assert_eq!(u16::from(0i16), Ok(0u8));
 //! ```
 //!
-//! (1) When the part of UFCS that allows `<Type as Trait>::method()` (and `Type::method()`) is
-//! implemented.
+//! (1) When the part of UFCS that allows `Type::method()` (as a shorthand for
+//! `<Type as Trait>::method()`) is implemented.
 //!
 //! Note that you can use `CastFrom` trait right now but it's unergonomic:
 //!
@@ -63,10 +63,10 @@
 //! use cast::CastFrom;
 //! use cast::prelude::*;
 //!
-//! assert_eq!(CastFrom::from(0f32 / 0f32, None::<u8>), Err(NaN));
-//! assert_eq!(CastFrom::from(256i16, None::<u8>), Err(Overflow));
-//! assert_eq!(CastFrom::from(-1i16, None::<u8>), Err(Underflow));
-//! assert_eq!(CastFrom::from(0i16, None::<u8>), Ok(0u8));
+//! assert_eq!(<u8 as CastFrom<_>>::from(0f32 / 0f32), Err(NaN));
+//! assert_eq!(<u8 as CastFrom<_>>::from(256i16), Err(Overflow));
+//! assert_eq!(<u8 as CastFrom<_>>::from(-1i16), Err(Underflow));
+//! assert_eq!(<u8 as CastFrom<_>>::from(0i16), Ok(0u8));
 //! ```
 //!
 //! # Cargo
@@ -116,17 +116,14 @@ pub trait CastFrom<Source> {
     type Output;
 
     /// Checked cast from `Source` to `Self`
-    ///
-    /// NB The `Option<Self>` will be removed after the UFCS `<Type as Trait>::method()` syntax
-    /// becomes available.
-    fn from(Source, Option<Self>) -> Self::Output;
+    fn from(Source) -> Self::Output;
 }
 
 /// The "cast to" operation
 pub trait CastTo: Sized {
     /// Checked cast from `Self` to `Destination`
     fn to<Destination: CastFrom<Self>>(self) -> <Destination as CastFrom<Self>>::Output {
-        CastFrom::from(self, None::<Destination>)
+        <Destination as CastFrom<Self>>::from(self)
     }
 }
 
@@ -146,7 +143,7 @@ macro_rules! promotion {
                     type Output = $dst;
 
                     #[inline(always)]
-                    fn from(src: $src, _: Option<$dst>) -> $dst {
+                    fn from(src: $src) -> $dst {
                          // NB Sanity check
                         debug_assert!(mem::size_of::<$src>() <= mem::size_of::<$dst>());
 
@@ -165,7 +162,7 @@ macro_rules! half_promotion {
                 impl CastFrom<$src> for $dst {
                     type Output = Result<$dst>;
 
-                    fn from(src: $src, _: Option<$dst>) -> Result<$dst> {
+                    fn from(src: $src) -> Result<$dst> {
                          // NB Sanity check
                         debug_assert!(mem::size_of::<$src>() <= mem::size_of::<$dst>());
 
@@ -188,7 +185,7 @@ macro_rules! from_unsigned {
                 impl CastFrom<$src> for $dst {
                     type Output = Result<$dst>;
 
-                    fn from(src: $src, _: Option<$dst>) -> Result<$dst> {
+                    fn from(src: $src) -> Result<$dst> {
                         // NB Sanity check
                         debug_assert!(mem::size_of::<$src>() >= mem::size_of::<$dst>());
 
@@ -210,7 +207,7 @@ macro_rules! from_signed {
         impl CastFrom<$src> for $dst {
             type Output = Result<$dst>;
 
-            fn from(src: $src, _: Option<$dst>) -> Result<$dst> {
+            fn from(src: $src) -> Result<$dst> {
                 // NB Sanity check
                 debug_assert!(mem::size_of::<$src>() > mem::size_of::<$dst>());
 
@@ -233,7 +230,7 @@ macro_rules! from_float {
         impl CastFrom<$src> for $dst {
             type Output = Result<$dst>;
 
-            fn from(src: $src, _: Option<$dst>) -> Result<$dst> {
+            fn from(src: $src) -> Result<$dst> {
                 let lower_bound: $dst = Int::min_value();
                 let upper_bound: $dst = Int::min_value();
                 if src.is_nan() {
@@ -316,7 +313,7 @@ mod _32 {
     impl CastFrom<f64> for f32 {
         type Output = Result<f32>;
 
-        fn from(src: f64, _: Option<f32>) -> Result<f32> {
+        fn from(src: f64) -> Result<f32> {
             let lower_bound: f32 = Float::min_value();
             let upper_bound: f32 = Float::min_value();
             if src.is_nan() || src.is_infinite() {
@@ -396,7 +393,7 @@ mod _64 {
     impl CastFrom<f64> for f32 {
         type Output = Result<f32>;
 
-        fn from(src: f64, _: Option<f32>) -> Result<f32> {
+        fn from(src: f64) -> Result<f32> {
             let lower_bound: f32 = Float::min_value();
             let upper_bound: f32 = Float::min_value();
             if src.is_nan() || src.is_infinite() {

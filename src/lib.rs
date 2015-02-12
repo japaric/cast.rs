@@ -86,8 +86,8 @@
 //! use cast::prelude::*;
 //! ```
 
-#![allow(unstable)]
 #![deny(missing_docs)]
+#![feature(std_misc)]
 
 use Error::*;
 
@@ -97,7 +97,7 @@ pub mod prelude;
 mod test;
 
 /// Errors that may arise from the cast operation: `(value: Source) -> Destination`
-#[derive(Copy, PartialEq, Show)]
+#[derive(Copy, Debug, PartialEq)]
 pub enum Error {
     /// `value` is `NaN`, but `Destination` can't represent it
     NaN,

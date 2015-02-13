@@ -87,6 +87,7 @@
 //! ```
 
 #![deny(missing_docs)]
+#![feature(core)]
 #![feature(std_misc)]
 
 use Error::*;
@@ -127,6 +128,21 @@ pub trait CastTo: Sized {
     }
 }
 
+/// A supertrait over `std::num::Float`, with additional information about casts.
+///
+/// FIXME(rust-lang/rust#22279) Add more `CastFrom<i8, Output=Self>` supertrait bounds
+/// FIXME(rust-lang/rust#20671) Add `where i8: CastFrom<Self, Output=Result<i8>>` bounds
+pub trait Float: Float_ + CastFrom<f32, Output=Self> {}
+
+/// Hack to have multiple `CastFrom` bounds on a supertrait
+pub trait Float_: std::num::Float + CastFrom<usize, Output=Self> {}
+
+impl Float_ for f32 {}
+impl Float_ for f64 {}
+
+impl Float for f32 {}
+impl Float for f64 {}
+
 macro_rules! impl_cast_to {
     ($($ty:ty),+) => {$(
         impl CastTo for $ty {})+
@@ -144,9 +160,6 @@ macro_rules! promotion {
 
                     #[inline(always)]
                     fn from(src: $src) -> $dst {
-                         // NB Sanity check
-                        debug_assert!(mem::size_of::<$src>() <= mem::size_of::<$dst>());
-
                         src as $dst
                     }
                 }
@@ -163,9 +176,6 @@ macro_rules! half_promotion {
                     type Output = Result<$dst>;
 
                     fn from(src: $src) -> Result<$dst> {
-                         // NB Sanity check
-                        debug_assert!(mem::size_of::<$src>() <= mem::size_of::<$dst>());
-
                         if src < 0 {
                             Err(Underflow)
                         } else {
@@ -186,9 +196,6 @@ macro_rules! from_unsigned {
                     type Output = Result<$dst>;
 
                     fn from(src: $src) -> Result<$dst> {
-                        // NB Sanity check
-                        debug_assert!(mem::size_of::<$src>() >= mem::size_of::<$dst>());
-
                         let upper_bound: $dst = Int::max_value();
                         if src > upper_bound as $src {
                             Err(Overflow)
@@ -208,9 +215,6 @@ macro_rules! from_signed {
             type Output = Result<$dst>;
 
             fn from(src: $src) -> Result<$dst> {
-                // NB Sanity check
-                debug_assert!(mem::size_of::<$src>() > mem::size_of::<$dst>());
-
                 let lower_bound: $dst = Int::min_value();
                 let upper_bound: $dst = Int::max_value();
                 if src < lower_bound as $src {
@@ -251,7 +255,6 @@ macro_rules! from_float {
 
 #[cfg(any(target_arch = "x86", target_arch = "arm"))]
 mod _32 {
-    use std::mem;
     use std::num::{Float, Int};
 
     use {CastFrom, Result};
@@ -331,7 +334,6 @@ mod _32 {
 
 #[cfg(any(target_arch = "x86_64"))]
 mod _64 {
-    use std::mem;
     use std::num::{Float, Int};
 
     use {CastFrom, Result};

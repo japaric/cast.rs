@@ -123,7 +123,9 @@ pub trait CastFrom<Source> {
 /// The "cast to" operation
 pub trait CastTo: Sized {
     /// Checked cast from `Self` to `Destination`
-    fn to<Destination: CastFrom<Self>>(self) -> <Destination as CastFrom<Self>>::Output {
+    fn to<Destination>(self) -> <Destination as CastFrom<Self>>::Output where
+        Destination: CastFrom<Self>,
+    {
         <Destination as CastFrom<Self>>::from(self)
     }
 }

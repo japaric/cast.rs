@@ -43,30 +43,15 @@
 //! assert_eq!(0u16.to::<u8>(), Ok(0u8));
 //! ```
 //!
-//! In the future (1), you'll be able to use `CastFrom` trait for "cast from" operations:
+//! If the `CastFrom` trait is in scope you can perform "cast from" operations:
 //!
-//! ``` ignore
+//! ```
 //! use cast::prelude::*;
 //!
 //! assert_eq!(u8::from(0f32 / 0f32), Err(NaN));
 //! assert_eq!(u8::from(256i16), Err(Overflow));
 //! assert_eq!(u8::from(-1i16), Err(Underflow));
-//! assert_eq!(u16::from(0i16), Ok(0u8));
-//! ```
-//!
-//! (1) When the part of UFCS that allows `Type::method()` (as a shorthand for
-//! `<Type as Trait>::method()`) is implemented.
-//!
-//! Note that you can use `CastFrom` trait right now but it's unergonomic:
-//!
-//! ```
-//! use cast::CastFrom;
-//! use cast::prelude::*;
-//!
-//! assert_eq!(<u8 as CastFrom<_>>::from(0f32 / 0f32), Err(NaN));
-//! assert_eq!(<u8 as CastFrom<_>>::from(256i16), Err(Overflow));
-//! assert_eq!(<u8 as CastFrom<_>>::from(-1i16), Err(Underflow));
-//! assert_eq!(<u8 as CastFrom<_>>::from(0i16), Ok(0u8));
+//! assert_eq!(u8::from(0i16), Ok(0u8));
 //! ```
 //!
 //! # Cargo

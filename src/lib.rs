@@ -7,7 +7,8 @@
 //! Take as an example an integer promotion from `u8` to `u16`:
 //!
 //! ```
-//! # #![allow(unstable)]
+//! #![feature(core)]
+//!
 //! use cast::CastTo;
 //! use std::num::ToPrimitive;
 //!
@@ -26,7 +27,8 @@
 //! the `Err` variant explains the error.
 //!
 //! ```
-//! # #![allow(unstable)]
+//! #![feature(core)]
+//!
 //! use cast::prelude::*;
 //! use std::num::ToPrimitive;
 //!
@@ -71,7 +73,9 @@
 //! use cast::prelude::*;
 //! ```
 
+#![allow(trivial_numeric_casts)]
 #![deny(missing_docs)]
+#![deny(warnings)]
 #![feature(core)]
 #![feature(std_misc)]
 

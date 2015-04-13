@@ -3,7 +3,8 @@
 //! # Examples
 //!
 //! ```
-//! # extern crate cast;
+//! extern crate cast;
+//!
 //! use cast::From;
 //!
 //! # fn main() {
@@ -15,6 +16,43 @@
 //! assert_eq!(u8::from(-1i8), None);  // Underflow
 //! assert_eq!(u8::from(0. / 0.), None);  // NaN
 //! assert_eq!(u8::from(127i8), Some(127u8));  // OK
+//! # }
+//! ```
+//!
+//! # `from_` vs `from`
+//!
+//! Importing `cast::From` shadows `std::convert::From`, so you can no longer write code like
+//! `Cow::from("Hello")`. The logical solution is to rename the `cast::From` import:
+//!
+//! ``` ignore
+//! extern crate cast;
+//!
+//! use std::borrow::Cow;
+//!
+//! // don't shadow `std::convert::From`
+//! use cast::From as _0;
+//!
+//! # fn main() {
+//! Cow::from("Hello");
+//! u16::from(0u8);  //~ error: multiple applicable methods in scope
+//! # }
+//! ```
+//!
+//! But then you'll hit this [bug](https://github.com/rust-lang/rust/issues/24382). The workaround
+//! for these cases where you want to use both `convert::From` and `cast::From` in the *same scope*
+//! is to use the `from_` method to refer to the latter trait.
+//!
+//! ```
+//! extern crate cast;
+//!
+//! use std::borrow::Cow;
+//!
+//! // don't shadow `std::convert::From`
+//! use cast::From as _0;
+//!
+//! # fn main() {
+//! Cow::from("Hello");
+//! u16::from_(0u8);
 //! # }
 //! ```
 
@@ -31,6 +69,13 @@ pub trait From<Src> {
 
     /// Checked cast from `Src` to `Self`
     fn from(Src) -> Self::Output;
+
+    /// Workaround for rust-lang/rust#24382. See module docs for details
+    ///
+    /// NOTE: This function may be removed/deprecated after that bug has been fixed
+    fn from_(src: Src) -> Self::Output {
+        Self::from(src)
+    }
 }
 
 macro_rules! promotion {

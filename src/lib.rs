@@ -304,11 +304,11 @@ impl From<f64> for f32 {
     fn from(src: f64) -> Option<f32> {
         #![allow(deprecated)]
 
-        use std::f32::{MAX_VALUE, MIN_VALUE};
+        use std::f32::{MAX, MIN};
 
         if src.is_nan() || src.is_infinite() {
             Some(src as f32)
-        } else if src < MIN_VALUE as f64 || src > MAX_VALUE as f64 {
+        } else if src < MIN as f64 || src > MAX as f64 {
             None
         } else {
             Some(src as f32)

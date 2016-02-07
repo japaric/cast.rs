@@ -1,110 +1,147 @@
-use From;
+/// If `src` can be promoted to `$dst`, then it must be Ok to cast `dst` back to `$src`
+macro_rules! promote_and_back {
+    ($($src:ident => $($dst:ident),+);+;) => {
+        mod demoting_to {
+            $(
+                mod $src {
+                    mod from {
+                        use From;
 
-#[test]
-fn promotion() {
-    assert_eq!(i8::from(0i8), 0i8);
-    assert_eq!(i16::from(0i8), 0i16);
-    assert_eq!(i32::from(0i8), 0i32);
-    assert_eq!(i64::from(0i8), 0i64);
-
-    assert_eq!(i16::from(0i16), 0i16);
-    assert_eq!(i32::from(0i16), 0i32);
-    assert_eq!(i64::from(0i16), 0i64);
-
-    assert_eq!(i32::from(0i32), 0i32);
-    assert_eq!(i64::from(0i32), 0i64);
-
-    assert_eq!(i64::from(0i64), 0i64);
-
-    assert_eq!(u8::from(0u8), 0u8);
-    assert_eq!(u16::from(0u8), 0u16);
-    assert_eq!(u32::from(0u8), 0u32);
-    assert_eq!(u64::from(0u8), 0u64);
-    assert_eq!(i16::from(0u8), 0i16);
-    assert_eq!(i32::from(0u8), 0i32);
-    assert_eq!(i64::from(0u8), 0i64);
-
-    assert_eq!(u16::from(0u16), 0u16);
-    assert_eq!(u32::from(0u16), 0u32);
-    assert_eq!(u64::from(0u16), 0u64);
-    assert_eq!(i32::from(0u16), 0i32);
-    assert_eq!(i64::from(0u16), 0i64);
-
-    assert_eq!(u32::from(0u32), 0u32);
-    assert_eq!(u64::from(0u32), 0u64);
-    assert_eq!(i64::from(0u32), 0i64);
-
-    assert_eq!(u64::from(0u64), 0u64);
-
-    assert_eq!(f32::from(0f32), 0f32);
-    assert_eq!(f64::from(0f32), 0f64);
-
-    assert_eq!(f64::from(0f64), 0f64);
+                        $(
+                            #[quickcheck]
+                            fn $dst(src: $src) -> bool {
+                                $src::cast($dst::cast(src)).is_ok()
+                            }
+                         )+
+                    }
+                }
+             )+
+        }
+    }
 }
 
-#[test]
-fn half_promotion() {
-    assert_eq!(u8::from(1i8), Some(1u8));
-    assert_eq!(u16::from(1i8), Some(1u16));
-    assert_eq!(u32::from(1i8), Some(1u32));
-    assert_eq!(u64::from(1i8), Some(1u64));
-
-    assert_eq!(u8::from(-1i8), None);
-    assert_eq!(u16::from(-1i8), None);
-    assert_eq!(u32::from(-1i8), None);
-    assert_eq!(u64::from(-1i8), None);
-
-    assert_eq!(u16::from(1i16), Some(1u16));
-    assert_eq!(u32::from(1i16), Some(1u32));
-    assert_eq!(u64::from(1i16), Some(1u64));
-
-    assert_eq!(u16::from(-1i16), None);
-    assert_eq!(u32::from(-1i16), None);
-    assert_eq!(u64::from(-1i16), None);
-
-    assert_eq!(u32::from(1i32), Some(1u32));
-    assert_eq!(u64::from(1i32), Some(1u64));
-
-    assert_eq!(u32::from(-1i32), None);
-    assert_eq!(u64::from(-1i32), None);
-
-    assert_eq!(u64::from(1i64), Some(1u64));
-
-    assert_eq!(u64::from(-1i64), None);
+#[cfg(feature = "unstable")]
+#[cfg(target_pointer_width = "32")]
+promote_and_back! {
+    i8    => f32, f64,     i16, i32, isize, i64                          ;
+    i16   => f32, f64,          i32, isize, i64                          ;
+    i32   => f32, f64,                      i64                          ;
+    isize => f32, f64,                      i64                          ;
+    i64   => f32, f64                                                    ;
+    u8    => f32, f64,     i16, i32, isize, i64,     u16, u32, usize, u64;
+    u16   => f32, f64,          i32, isize, i64,          u32, usize, u64;
+    u32   => f32, f64,                      i64,                      u64;
+    usize => f32, f64,                      i64,                      u64;
+    u64   => f32, f64                                                    ;
 }
 
-#[test]
-fn nan() {
-    assert_eq!(u8::from(0f32 / 0f32), None);
-    assert_eq!(u16::from(0f32 / 0f32), None);
-    assert_eq!(u32::from(0f32 / 0f32), None);
-    assert_eq!(u64::from(0f32 / 0f32), None);
-    assert_eq!(i8::from(0f32 / 0f32), None);
-    assert_eq!(i16::from(0f32 / 0f32), None);
-    assert_eq!(i32::from(0f32 / 0f32), None);
-    assert_eq!(i64::from(0f32 / 0f32), None);
-
-    assert!(f32::from(0f32 / 0f32).is_nan());
-    assert!(f64::from(0f32 / 0f32).is_nan());
-
-    assert!(f32::from(0f64 / 0f64).unwrap().is_nan());
-    assert!(f64::from(0f64 / 0f64).is_nan());
+#[cfg(feature = "unstable")]
+#[cfg(target_pointer_width = "64")]
+promote_and_back! {
+    i8    => f32, f64,     i16, i32, i64, isize                          ;
+    i16   => f32, f64,          i32, i64, isize                          ;
+    i32   => f32, f64,               i64, isize                          ;
+    i64   => f32, f64                                                    ;
+    isize => f32, f64                                                    ;
+    u8    => f32, f64,     i16, i32, i64, isize,     u16, u32, u64, usize;
+    u16   => f32, f64,          i32, i64, isize,          u32, u64, usize;
+    u32   => f32, f64,               i64, isize,               u64, usize;
+    u64   => f32, f64                                                    ;
+    usize => f32, f64                                                    ;
 }
 
-#[test]
-fn neg_inf() {
-    assert_eq!(f32::from(-1f32 / 0f32), -1f32 / 0f32);
-    assert_eq!(f64::from(-1f32 / 0f32), -1f64 / 0f64);
+/// If it's Ok to cast `src` to `$dst`, it must also be Ok to cast `dst` back to `$src`
+macro_rules! symmetric_cast_between {
+    ($($src:ident => $($dst:ident),+);+;) => {
+        mod symmetric_cast_between {
+            $(
+                mod $src {
+                    mod and {
+                        use quickcheck::TestResult;
 
-    assert_eq!(f32::from(-1f64 / 0f64), Some(-1f32 / 0f32));
-    assert_eq!(f64::from(-1f64 / 0f64), -1f64 / 0f64);
+                        use From;
+
+                        $(
+                            #[quickcheck]
+                            fn $dst(src: $src) -> TestResult {
+                                if let Ok(dst) = $dst::cast(src) {
+                                    TestResult::from_bool($src::cast(dst).is_ok())
+                                } else {
+                                    TestResult::discard()
+                                }
+                            }
+                         )+
+                    }
+                }
+             )+
+        }
+    }
 }
 
-#[test]
-fn plus_inf() {
-    assert_eq!(f32::from(1f32 / 0f32), 1f32 / 0f32);
-    assert_eq!(f64::from(1f32 / 0f32), 1f64 / 0f64);
+#[cfg(feature = "unstable")]
+#[cfg(target_pointer_width = "32")]
+symmetric_cast_between! {
+    u8    =>           i8                      ;
+    u16   =>           i8, i16                 ;
+    u32   =>           i8, i16, i32            ;
+    usize =>           i8, i16, i32            ;
+    u64   =>           i8, i16, i32, i64, isize;
+}
 
-    assert_eq!(f32::from(1f64 / 0f64), Some((1f32 / 0f32)));
-    assert_eq!(f64::from(1f64 / 0f64), 1f64 / 0f64);
+#[cfg(feature = "unstable")]
+#[cfg(target_pointer_width = "64")]
+symmetric_cast_between! {
+    u8    =>           i8                      ;
+    u16   =>           i8, i16                 ;
+    u32   =>           i8, i16, i32            ;
+    u64   =>           i8, i16, i32, i64, isize;
+    usize =>           i8, i16, i32, i64, isize;
+}
+
+macro_rules! from_float {
+    ($($src:ident => $($dst:ident),+);+;) => {
+        $(
+            mod $src {
+                mod inf {
+                    mod to {
+                        use {Error, From};
+
+                        $(
+                            #[test]
+                            fn $dst() {
+                                let _0: $src = 0.;
+                                let _1: $src = 1.;
+                                let inf = _1 / _0;
+                                let neg_inf = -_1 / _0;
+
+                                assert_eq!($dst::cast(inf), Err(Error::Infinite));
+                                assert_eq!($dst::cast(neg_inf), Err(Error::Infinite));
+                            }
+                         )+
+                    }
+                }
+
+                mod nan {
+                    mod to {
+                        use {Error, From};
+
+                        $(
+                            #[test]
+                            fn $dst() {
+                                let _0: $src = 0.;
+                                let nan = _0 / _0;
+
+                                assert_eq!($dst::cast(nan), Err(Error::NaN));
+                            }
+                         )+
+                    }
+                }
+            }
+         )+
+    }
+}
+
+from_float! {
+    f32 => i8, i16, i32, i64, isize, u8, u16, u32, u64, usize;
+    f64 => i8, i16, i32, i64, isize, u8, u16, u32, u64, usize;
 }

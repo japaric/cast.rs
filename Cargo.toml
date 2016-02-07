@@ -1,5 +1,13 @@
 [package]
-
-name = "cast"
-version = "0.0.0"
 authors = ["Jorge Aparicio <japaricious@gmail.com>"]
+license = "MIT OR Apache-2.0"
+name = "cast"
+version = "0.1.0"
+
+[features]
+# For tests only
+unstable = ["quickcheck", "quickcheck_macros"]
+
+[dependencies]
+quickcheck = { version = "0.2.25", optional = true }
+quickcheck_macros = { version = "0.2.25", optional = true }

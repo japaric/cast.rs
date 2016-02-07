@@ -1,83 +1,134 @@
-//! Checked scalar casting
+//! Ergonomic, checked cast functions for primitive types
 //!
-//! # Examples
+//! This crate provides one checked cast function for each numeric primitive. Use these functions
+//! to perform a cast from any other numeric primitive:
 //!
 //! ```
 //! extern crate cast;
 //!
-//! use cast::From;
+//! use cast::{u8, u16, Error};
 //!
 //! # fn main() {
-//! // Infallible operations, like integer promotion, are equivalent to an `as` call
-//! assert_eq!(u16::from(0u8), 0u16);
+//! // Infallible operations, like integer promotion, are equivalent to a normal cast with `as`
+//! assert_eq!(u16(0u8), 0u16);
 //!
-//! // Everything else will return an `Option` depending on the success of the operation
-//! assert_eq!(u8::from(256u16), None);  // Overflow
-//! assert_eq!(u8::from(-1i8), None);  // Underflow
-//! assert_eq!(u8::from(0. / 0.), None);  // NaN
-//! assert_eq!(u8::from(127i8), Some(127u8));  // OK
+//! // Everything else will return a `Result` depending on the success of the operation
+//! assert_eq!(u8(0u16), Ok(0u8));
+//! assert_eq!(u8(256u16), Err(Error::Overflow));
+//! assert_eq!(u8(-1i8), Err(Error::Underflow));
+//! assert_eq!(u8(1. / 0.), Err(Error::Infinite));
+//! assert_eq!(u8(0. / 0.), Err(Error::NaN));
 //! # }
 //! ```
 //!
-//! # `from_` vs `from`
+//! There are no namespace problems between these functions, the "primitive modules" in `core`/`std`
+//! and the built-in primitive types, so all them can be in the same scope:
 //!
-//! Importing `cast::From` shadows `std::convert::From`, so you can no longer write code like
-//! `Cow::from("Hello")`. The logical solution is to rename the `cast::From` import:
-//!
-//! ``` ignore
+//! ```
 //! extern crate cast;
 //!
-//! use std::borrow::Cow;
+//! use std::u8;
+//! use cast::{u8, u16};
 //!
-//! // don't shadow `std::convert::From`
+//! # fn main() {
+//! // `u8` as a type
+//! let x: u8 = 0;
+//! // `u8` as a module
+//! let y = u16(u8::MAX);
+//! // `u8` as a function
+//! let z = u8(y).unwrap();
+//! # }
+//! ```
+//!
+//! The checked cast functionality is also usable with type aliases via the `cast` static method:
+//!
+//! ```
+//! extern crate cast;
+//!
+//! use std::os::raw::c_ulonglong;
+//! // NOTE avoid shadowing `std::convert::From` - cf. rust-lang/rfcs#1311
 //! use cast::From as _0;
 //!
+//!
 //! # fn main() {
-//! Cow::from("Hello");
-//! u16::from(0u8);  //~ error: multiple applicable methods in scope
+//! assert_eq!(c_ulonglong::cast(0u8), 0u64);
 //! # }
 //! ```
 //!
-//! But then you'll hit this [bug](https://github.com/rust-lang/rust/issues/24382). The workaround
-//! for these cases where you want to use both `convert::From` and `cast::From` in the *same scope*
-//! is to use the `from_` method to refer to the latter trait.
+//! This crate also provides a `From` trait that can be used, for example, to create a generic
+//! function that accepts any type that can be infallibly casted to `u32`.
 //!
 //! ```
 //! extern crate cast;
 //!
-//! use std::borrow::Cow;
-//!
-//! // don't shadow `std::convert::From`
-//! use cast::From as _0;
+//! fn to_u32<T>(x: T) -> u32
+//!     // reads as: "where u32 can be casted from T with output u32"
+//!     where u32: cast::From<T, Output=u32>,
+//! {
+//!     cast::u32(x)
+//! }
 //!
 //! # fn main() {
-//! Cow::from("Hello");
-//! u16::from_(0u8);
+//! assert_eq!(to_u32(0u8), 0u32);
+//! assert_eq!(to_u32(1u16), 1u32);
+//! assert_eq!(to_u32(2u32), 2u32);
+//!
+//! // to_u32(-1i32);  // Compile error
 //! # }
 //! ```
+//!
 
 #![deny(missing_docs)]
 #![deny(warnings)]
+#![no_std]
+
+#![cfg_attr(all(feature = "unstable", test), feature(plugin))]
+#![cfg_attr(all(feature = "unstable", test), plugin(quickcheck_macros))]
+
+#[cfg(all(feature = "unstable", test))]
+extern crate quickcheck;
 
 #[cfg(test)]
 mod test;
 
+/// Cast errors
+#[derive(Debug, PartialEq)]
+pub enum Error {
+    /// Infinite value casted to a type that can only represent finite values
+    Infinite,
+    /// NaN value casted to a type that can't represent a NaN value
+    NaN,
+    /// Source value is greater than the maximum value that the destination type can hold
+    Overflow,
+    /// Source value is smaller than the minimum value that the destination type can hold
+    Underflow,
+}
+
 /// The "cast from" operation
 pub trait From<Src> {
-    /// The result of the cast operation: either `Self` or `Option<Self>`
+    /// The result of the cast operation: either `Self` or `Result<Self, Error>`
     type Output;
 
     /// Checked cast from `Src` to `Self`
-    fn from(Src) -> Self::Output;
+    fn cast(Src) -> Self::Output;
+}
 
-    /// Workaround for rust-lang/rust#24382. See module docs for details
-    ///
-    /// NOTE: This function may be removed/deprecated after that bug has been fixed
-    fn from_(src: Src) -> Self::Output {
-        Self::from(src)
+macro_rules! fns {
+    ($($ty:ident),+) => {
+        $(
+            /// Checked cast function
+            pub fn $ty<T>(x: T) -> <$ty as From<T>>::Output
+                where $ty: From<T>
+            {
+                <$ty as From<T>>::cast(x)
+            }
+         )+
     }
 }
 
+fns!(f32, f64, i8, i16, i32, i64, isize, u8, u16, u32, u64, usize);
+
+/// `$dst` can hold any value of `$src`
 macro_rules! promotion {
     ($($src:ty => $($dst: ty),+);+;) => {
         $(
@@ -85,7 +136,7 @@ macro_rules! promotion {
                 impl From<$src> for $dst {
                     type Output = $dst;
 
-                    fn from(src: $src) -> $dst {
+                    fn cast(src: $src) -> $dst {
                         src as $dst
                     }
                 }
@@ -94,18 +145,19 @@ macro_rules! promotion {
     }
 }
 
+/// `$dst` can hold any positive value of `$src`
 macro_rules! half_promotion {
     ($($src:ty => $($dst:ty),+);+;) => {
         $(
             $(
                 impl From<$src> for $dst {
-                    type Output = Option<$dst>;
+                    type Output = Result<$dst, Error>;
 
-                    fn from(src: $src) -> Option<$dst> {
+                    fn cast(src: $src) -> Self::Output {
                         if src < 0 {
-                            None
+                            Err(Error::Underflow)
                         } else {
-                            Some(src as $dst)
+                            Ok(src as $dst)
                         }
                     }
                 }
@@ -114,18 +166,21 @@ macro_rules! half_promotion {
     }
 }
 
+/// From an unsigned `$src` to a smaller `$dst`
 macro_rules! from_unsigned {
-    ($($src:ty => $($dst:ty),+);+;) => {
+    ($($src:ident => $($dst:ident),+);+;) => {
         $(
             $(
                 impl From<$src> for $dst {
-                    type Output = Option<$dst>;
+                    type Output = Result<$dst, Error>;
 
-                    fn from(src: $src) -> Option<$dst> {
-                        if src > <$dst>::max_value() as $src {
-                            None
+                    fn cast(src: $src) -> Self::Output {
+                        use core::$dst;
+
+                        if src > $dst::MAX as $src {
+                            Err(Error::Overflow)
                         } else {
-                            Some(src as $dst)
+                            Ok(src as $dst)
                         }
                     }
                 }
@@ -134,21 +189,24 @@ macro_rules! from_unsigned {
     }
 }
 
+/// From a signed `$src` to a smaller `$dst`
 macro_rules! from_signed {
-    ($($src:ty => $($dst:ty),+);+;) => {
+    ($($src:ident => $($dst:ident),+);+;) => {
         $(
             $(
                 impl From<$src> for $dst {
-                    type Output = Option<$dst>;
+                    type Output = Result<$dst, Error>;
 
-                    fn from(src: $src) -> Option<$dst> {
-                        if src < <$dst>::min_value() as $src ||
-                            src > <$dst>::max_value() as $src
-                        {
-                            None
+                    fn cast(src: $src) -> Self::Output {
+                        use core::$dst;
+
+                        Err(if src < $dst::MIN as $src {
+                            Error::Underflow
+                        } else if src > $dst::MAX as $src {
+                            Error::Overflow
                         } else {
-                            Some(src as $dst)
-                        }
+                            return Ok(src as $dst);
+                        })
                     }
                 }
             )+
@@ -156,22 +214,28 @@ macro_rules! from_signed {
     }
 }
 
+/// From a float `$src` to an integer `$dst`
 macro_rules! from_float {
-    ($($src:ty => $($dst:ty),+);+;) => {
+    ($($src:ident => $($dst:ident),+);+;) => {
         $(
             $(
                 impl From<$src> for $dst {
-                    type Output = Option<$dst>;
+                    type Output = Result<$dst, Error>;
 
-                    fn from(src: $src) -> Option<$dst> {
-                        if src.is_nan() ||
-                            src < <$dst>::min_value() as $src ||
-                                src > <$dst>::max_value() as $src
-                        {
-                            None
+                    fn cast(src: $src) -> Self::Output {
+                        use core::{$dst, $src};
+
+                        Err(if src != src {
+                            Error::NaN
+                        } else if src == $src::INFINITY || src == $src::NEG_INFINITY {
+                            Error::Infinite
+                        } else if src < $dst::MIN as $src {
+                            Error::Underflow
+                        } else if src > $dst::MAX as $src {
+                            Error::Overflow
                         } else {
-                            Some(src as $dst)
-                        }
+                            return Ok(src as $dst);
+                        })
                     }
                 }
             )+
@@ -181,20 +245,20 @@ macro_rules! from_float {
 
 // PLAY TETRIS! ;-)
 
-#[cfg(any(target_arch = "x86", target_arch = "arm"))]
+#[cfg(target_pointer_width = "32")]
 mod _32 {
-    use From;
+    use {Error, From};
 
     // Signed
-    promotion!{
+    promotion! {
         i8    => f32, f64, i8, i16, i32, isize, i64;
         i16   => f32, f64,     i16, i32, isize, i64;
         i32   => f32, f64,          i32, isize, i64;
-        isize => f32, f64,          i32, isize  i64;
+        isize => f32, f64,          i32, isize, i64;
         i64   => f32, f64,                      i64;
     }
 
-    half_promotion!{
+    half_promotion! {
         i8    =>                                     u8, u16, u32, usize, u64;
         i16   =>                                         u16, u32, usize, u64;
         i32   =>                                              u32, usize, u64;
@@ -202,7 +266,7 @@ mod _32 {
         i64   =>                                                          u64;
     }
 
-    from_signed!{
+    from_signed! {
 
         i16   =>           i8,                       u8;
         i32   =>           i8, i16,                  u8, u16;
@@ -211,15 +275,15 @@ mod _32 {
     }
 
     // Unsigned
-    promotion!{
+    promotion! {
         u8    => f32, f64,     i16, i32, isize, i64, u8, u16, u32, usize, u64;
         u16   => f32, f64,          i32, isize, i64,     u16, u32, usize, u64;
-        u32   => f32, f64,               isize, i64,          u32, usize, u64;
-        usize => f32, f64,               isize, i64,          u32, usize, u64;
+        u32   => f32, f64,                      i64,          u32, usize, u64;
+        usize => f32, f64,                      i64,          u32, usize, u64;
         u64   => f32, f64,                                                u64;
     }
 
-    from_unsigned!{
+    from_unsigned! {
         u8    =>           i8;
         u16   =>           i8, i16,                  u8;
         u32   =>           i8, i16, i32, isize,      u8, u16;
@@ -228,23 +292,23 @@ mod _32 {
     }
 
     // Float
-    promotion!{
+    promotion! {
         f32   => f32, f64;
         f64   =>      f64;
     }
 
-    from_float!{
+    from_float! {
         f32   =>           i8, i16, i32, isize, i64, u8, u16, u32, usize, u64;
         f64   =>           i8, i16, i32, isize, i64, u8, u16, u32, usize, u64;
     }
 }
 
-#[cfg(any(target_arch = "x86_64"))]
+#[cfg(target_pointer_width = "64")]
 mod _64 {
-    use From;
+    use {Error, From};
 
     // Signed
-    promotion!{
+    promotion! {
         i8    => f32, f64, i8, i16, i32, i64, isize;
         i16   => f32, f64,     i16, i32, i64, isize;
         i32   => f32, f64,          i32, i64, isize;
@@ -252,7 +316,7 @@ mod _64 {
         isize => f32, f64,               i64, isize;
     }
 
-    half_promotion!{
+    half_promotion! {
         i8    =>                                     u8, u16, u32, u64, usize;
         i16   =>                                         u16, u32, u64, usize;
         i32   =>                                              u32, u64, usize;
@@ -260,7 +324,7 @@ mod _64 {
         isize =>                                                   u64, usize;
     }
 
-    from_signed!{
+    from_signed! {
 
         i16   =>           i8,                       u8;
         i32   =>           i8, i16,                  u8, u16;
@@ -269,7 +333,7 @@ mod _64 {
     }
 
     // Unsigned
-    promotion!{
+    promotion! {
         u8    => f32, f64,     i16, i32, i64, isize, u8, u16, u32, u64, usize;
         u16   => f32, f64,          i32, i64, isize,     u16, u32, u64, usize;
         u32   => f32, f64,               i64, isize,          u32, u64, usize;
@@ -277,7 +341,7 @@ mod _64 {
         usize => f32, f64,                                         u64, usize;
     }
 
-    from_unsigned!{
+    from_unsigned! {
         u8    =>           i8;
         u16   =>           i8, i16,                  u8;
         u32   =>           i8, i16, i32,             u8, u16;
@@ -286,12 +350,12 @@ mod _64 {
     }
 
     // Float
-    promotion!{
+    promotion! {
         f32  => f32, f64;
         f64  =>      f64;
     }
 
-    from_float!{
+    from_float! {
         f32  =>           i8, i16, i32, i64, isize, u8, u16, u32, u64, usize;
         f64  =>           i8, i16, i32, i64, isize, u8, u16, u32, u64, usize;
     }
@@ -299,19 +363,19 @@ mod _64 {
 
 // The missing piece
 impl From<f64> for f32 {
-    type Output = Option<f32>;
+    type Output = Result<f32, Error>;
 
-    fn from(src: f64) -> Option<f32> {
-        #![allow(deprecated)]
+    fn cast(src: f64) -> Self::Output {
+        use core::{f32, f64};
 
-        use std::f32::{MAX, MIN};
-
-        if src.is_nan() || src.is_infinite() {
-            Some(src as f32)
-        } else if src < MIN as f64 || src > MAX as f64 {
-            None
+        if src != src || src == f64::INFINITY || src == f64::NEG_INFINITY {
+            Ok(src as f32)
+        } else if src < f32::MIN as f64 {
+            Err(Error::Underflow)
+        } else if src > f32::MAX as f64 {
+            Err(Error::Overflow)
         } else {
-            Some(src as f32)
+            Ok(src as f32)
         }
     }
 }

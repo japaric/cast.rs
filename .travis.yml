@@ -25,8 +25,11 @@ env:
     - secure: Q3dmNxc18eSye7TV1kzijQsdp9oeMQ8xxTqshMOLLVxtTBfJwIYcPwAhk4bGWZpa6DbNZHSQTfvWPY2lt1kaNXXurQQKYOAUgtPjnFwJg7uOIHtph7HEVB+pybKYZ2usFMWfnFP1SfojNSYjpaR1mnjJJZNTWrJdmKUbhoyJTuc=
 
 branches:
-  only: master
+  only:
+    - auto
+    - master
 
 notifications:
   email:
     on_success: never
+  webhooks: http://homu.herokuapp.com/travis

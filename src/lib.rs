@@ -80,6 +80,7 @@
 
 #![deny(missing_docs)]
 #![deny(warnings)]
+#![allow(const_err)]
 #![no_std]
 
 #![cfg_attr(all(feature = "unstable", test), feature(plugin))]

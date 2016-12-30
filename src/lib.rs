@@ -118,6 +118,7 @@ macro_rules! fns {
     ($($ty:ident),+) => {
         $(
             /// Checked cast function
+            #[inline]
             pub fn $ty<T>(x: T) -> <$ty as From<T>>::Output
                 where $ty: From<T>
             {
@@ -137,6 +138,7 @@ macro_rules! promotion {
                 impl From<$src> for $dst {
                     type Output = $dst;
 
+                    #[inline]
                     fn cast(src: $src) -> $dst {
                         src as $dst
                     }
@@ -154,6 +156,7 @@ macro_rules! half_promotion {
                 impl From<$src> for $dst {
                     type Output = Result<$dst, Error>;
 
+                    #[inline]
                     fn cast(src: $src) -> Self::Output {
                         if src < 0 {
                             Err(Error::Underflow)
@@ -175,6 +178,7 @@ macro_rules! from_unsigned {
                 impl From<$src> for $dst {
                     type Output = Result<$dst, Error>;
 
+                    #[inline]
                     fn cast(src: $src) -> Self::Output {
                         use core::$dst;
 
@@ -198,6 +202,7 @@ macro_rules! from_signed {
                 impl From<$src> for $dst {
                     type Output = Result<$dst, Error>;
 
+                    #[inline]
                     fn cast(src: $src) -> Self::Output {
                         use core::$dst;
 
@@ -223,6 +228,7 @@ macro_rules! from_float {
                 impl From<$src> for $dst {
                     type Output = Result<$dst, Error>;
 
+                    #[inline]
                     fn cast(src: $src) -> Self::Output {
                         use core::{$dst, $src};
 
@@ -366,6 +372,7 @@ mod _64 {
 impl From<f64> for f32 {
     type Output = Result<f32, Error>;
 
+    #[inline]
     fn cast(src: f64) -> Self::Output {
         use core::{f32, f64};
 

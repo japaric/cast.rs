@@ -20,5 +20,5 @@ std = []
 [dependencies]
 # TODO these should be optional dev-dependencies.
 # cf https://github.com/rust-lang/cargo/issues/1596
-quickcheck = { version = "0.2.25", optional = true }
-quickcheck_macros = { version = "0.2.25", optional = true }
+quickcheck = { version = "0.4", optional = true }
+quickcheck_macros = { version = "0.4", optional = true }

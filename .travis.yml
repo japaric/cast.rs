@@ -15,7 +15,9 @@ script:
   - |
       travis-cargo build &&
       travis-cargo test &&
-      travis-cargo --only stable doc
+      travis-cargo build -- --features std &&
+      travis-cargo test -- --features std &&
+      travis-cargo --only stable doc -- --features std
 
 after_success:
   - travis-cargo --only stable doc-upload

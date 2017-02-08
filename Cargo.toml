@@ -9,6 +9,8 @@ repository = "https://github.com/japaric/cast.rs"
 version = "0.1.0"
 
 [features]
+# Assume we should use `std` unless asked to do otherwise.
+default = ["std"]
 # For tests only
 unstable = ["quickcheck", "quickcheck_macros"]
 # Enable this to get a std::error::Error impl for convenient use with other

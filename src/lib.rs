@@ -77,6 +77,14 @@
 //! # }
 //! ```
 //!
+//! ## Building without `std`
+//!
+//! This crate can be used without Rust's `std` crate by declaring it as
+//! follows in your `Cargo.toml`:
+//!
+//! ```toml
+//! cast = { version = "*", default-features = false }
+//! ```
 
 #![deny(missing_docs)]
 #![deny(warnings)]

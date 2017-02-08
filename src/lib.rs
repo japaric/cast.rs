@@ -81,19 +81,27 @@
 #![deny(missing_docs)]
 #![deny(warnings)]
 #![allow(const_err)]
-#![no_std]
+
+#![cfg_attr(not(feature="std"), no_std)]
 
 #![cfg_attr(all(feature = "unstable", test), feature(plugin))]
 #![cfg_attr(all(feature = "unstable", test), plugin(quickcheck_macros))]
 
+#[cfg(feature="std")]
+extern crate core;
+
 #[cfg(all(feature = "unstable", test))]
 extern crate quickcheck;
+
+use core::fmt;
+#[cfg(feature="std")]
+use std::error;
 
 #[cfg(test)]
 mod test;
 
 /// Cast errors
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Error {
     /// Infinite value casted to a type that can only represent finite values
     Infinite,
@@ -103,6 +111,32 @@ pub enum Error {
     Overflow,
     /// Source value is smaller than the minimum value that the destination type can hold
     Underflow,
+}
+
+impl Error {
+    /// A private helper function that implements `description`, because
+    /// `description` is only available when we have `std` enabled.
+    fn description_helper(&self) -> &str {
+        match *self {
+            Error::Infinite => "Cannot store infinite value in finite type",
+            Error::NaN => "Cannot store NaN in type which does not support it",
+            Error::Overflow => "Overflow during numeric conversion",
+            Error::Underflow => "Underflow during numeric conversion",
+        }
+    }
+}
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.description_helper())
+    }
+}
+
+#[cfg(feature="std")]
+impl error::Error for Error {
+    fn description(&self) -> &str {
+        self.description_helper()
+    }
 }
 
 /// The "cast from" operation

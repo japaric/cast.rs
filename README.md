@@ -1,5 +1,5 @@
-[![Travis](https://travis-ci.org/japaric/cast.rs.svg?branch=master)](https://travis-ci.org/japaric/cast.rs)
-[![crates.io](http://meritbadge.herokuapp.com/cast)](https://crates.io/crates/cast)
+[![crates.io](https://img.shields.io/crates/d/cast.svg)](https://crates.io/crates/cast)
+[![crates.io](https://img.shields.io/crates/v/cast.svg)](https://crates.io/crates/cast)
 
 # `cast`
 

@@ -90,15 +90,13 @@
 #![deny(warnings)]
 #![allow(const_err)]
 
-#![cfg_attr(not(feature="std"), no_std)]
+#![cfg_attr(not(feature = "std"), no_std)]
 
-#![cfg_attr(all(feature = "unstable", test), feature(plugin))]
-#![cfg_attr(all(feature = "unstable", test), plugin(quickcheck_macros))]
-
-#[cfg(feature="std")]
+#[cfg(feature = "std")]
 extern crate core;
 
-#[cfg(all(feature = "unstable", test))]
+#[cfg(test)]
+#[macro_use]
 extern crate quickcheck;
 
 use core::fmt;

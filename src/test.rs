@@ -8,9 +8,10 @@ macro_rules! promote_and_back {
                         use From;
 
                         $(
-                            #[quickcheck]
-                            fn $dst(src: $src) -> bool {
-                                $src::cast($dst::cast(src)).is_ok()
+                            quickcheck! {
+                                fn $dst(src: $src) -> bool {
+                                    $src::cast($dst::cast(src)).is_ok()
+                                }
                             }
                          )+
                     }
@@ -20,7 +21,6 @@ macro_rules! promote_and_back {
     }
 }
 
-#[cfg(feature = "unstable")]
 #[cfg(target_pointer_width = "32")]
 promote_and_back! {
     i8    => f32, f64,     i16, i32, isize, i64                          ;
@@ -35,7 +35,6 @@ promote_and_back! {
     u64   => f32, f64                                                    ;
 }
 
-#[cfg(feature = "unstable")]
 #[cfg(target_pointer_width = "64")]
 promote_and_back! {
     i8    => f32, f64,     i16, i32, i64, isize                          ;
@@ -62,12 +61,13 @@ macro_rules! symmetric_cast_between {
                         use From;
 
                         $(
-                            #[quickcheck]
-                            fn $dst(src: $src) -> TestResult {
-                                if let Ok(dst) = $dst::cast(src) {
-                                    TestResult::from_bool($src::cast(dst).is_ok())
-                                } else {
-                                    TestResult::discard()
+                            quickcheck! {
+                                fn $dst(src: $src) -> TestResult {
+                                    if let Ok(dst) = $dst::cast(src) {
+                                        TestResult::from_bool($src::cast(dst).is_ok())
+                                    } else {
+                                        TestResult::discard()
+                                    }
                                 }
                             }
                          )+
@@ -78,7 +78,6 @@ macro_rules! symmetric_cast_between {
     }
 }
 
-#[cfg(feature = "unstable")]
 #[cfg(target_pointer_width = "32")]
 symmetric_cast_between! {
     u8    =>           i8                      ;
@@ -88,7 +87,6 @@ symmetric_cast_between! {
     u64   =>           i8, i16, i32, i64, isize;
 }
 
-#[cfg(feature = "unstable")]
 #[cfg(target_pointer_width = "64")]
 symmetric_cast_between! {
     u8    =>           i8                      ;

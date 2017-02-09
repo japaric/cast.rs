@@ -1,37 +1,43 @@
-sudo: false
+dist: trusty
 language: rust
+services: docker
+sudo: required
 
-rust:
-  - stable
-  - beta
-  - nightly
+rust: stable
 
-before_script:
-  - |
-      pip install 'travis-cargo<0.2' --user &&
-      export PATH=$HOME/.local/bin:$PATH
+env:       TARGET=x86_64-unknown-linux-gnu
+matrix:
+  include:
+    - env: TARGET=i686-unknown-linux-gnu
+    - env: TARGET=x86_64-unknown-linux-gnu
+      rust: beta
+    - env: TARGET=i686-unknown-linux-gnu
+      rust: beta
+    - env: TARGET=x86_64-unknown-linux-gnu
+      rust: nightly
+    - env: TARGET=i686-unknown-linux-gnu
+      rust: nightly
+
+before_install: set -e
+
+install:
+  - sh ci/install.sh
+  - source ~/.cargo/env || true
 
 script:
-  - |
-      travis-cargo build -- --no-default-features &&
-      travis-cargo test -- --no-default-features &&
-      travis-cargo build &&
-      travis-cargo test &&
-      travis-cargo --only stable doc
+  - bash ci/script.sh
 
-after_success:
-  - travis-cargo --only stable doc-upload
+after_script: set +e
 
-env:
-  global:
-    - secure: Q3dmNxc18eSye7TV1kzijQsdp9oeMQ8xxTqshMOLLVxtTBfJwIYcPwAhk4bGWZpa6DbNZHSQTfvWPY2lt1kaNXXurQQKYOAUgtPjnFwJg7uOIHtph7HEVB+pybKYZ2usFMWfnFP1SfojNSYjpaR1mnjJJZNTWrJdmKUbhoyJTuc=
+cache: cargo
+before_cache:
+  - chmod -R a+r $HOME/.cargo
 
 branches:
   only:
     - auto
-    - master
+    - try
 
 notifications:
   email:
     on_success: never
-  webhooks: http://homu.herokuapp.com/travis

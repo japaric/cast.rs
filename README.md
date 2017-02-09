@@ -8,14 +8,16 @@
 ``` rust
 extern crate cast;
 
-// `u8` and `u16` are checked cast functions, use them to cast from any numeric primitive to
-// `u8`/`u16` respectively
+// `u8` and `u16` are checked cast functions, use them to cast from any numeric
+// primitive to `u8`/`u16` respectively
 use cast::{u8, u16, Error};
 
-// Infallible operations, like integer promotion, are equivalent to a normal cast with `as`
+// Infallible operations, like integer promotion, are equivalent to a normal
+// cast with `as`
 assert_eq!(u16(0u8), 0u16);
 
-// Everything else will return a `Result` depending on the success of the operation
+// Everything else will return a `Result` depending on the success of the
+// operation
 assert_eq!(u8(0u16), Ok(0u8));
 assert_eq!(u8(256u16), Err(Error::Overflow));
 assert_eq!(u8(-1i8), Err(Error::Underflow));
@@ -23,7 +25,7 @@ assert_eq!(u8(1. / 0.), Err(Error::Infinite));
 assert_eq!(u8(0. / 0.), Err(Error::NaN));
 ```
 
-## [Docs](http://japaric.github.io/cast.rs/cast)
+## [API docs](https://docs.rs/cast)
 
 ## License
 
@@ -37,6 +39,6 @@ at your option.
 
 ### Contribution
 
-Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the
-work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any
-additional terms or conditions.
+Unless you explicitly state otherwise, any contribution intentionally submitted
+for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
+dual licensed as above, without any additional terms or conditions.

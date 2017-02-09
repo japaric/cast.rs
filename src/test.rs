@@ -1,4 +1,5 @@
-/// If `src` can be promoted to `$dst`, then it must be Ok to cast `dst` back to `$src`
+// If `src` can be promoted to `$dst`, then it must be Ok to cast `dst` back to
+// `$src`
 macro_rules! promote_and_back {
     ($($src:ident => $($dst:ident),+);+;) => {
         mod demoting_to {
@@ -49,7 +50,8 @@ promote_and_back! {
     usize => f32, f64                                                    ;
 }
 
-/// If it's Ok to cast `src` to `$dst`, it must also be Ok to cast `dst` back to `$src`
+// If it's Ok to cast `src` to `$dst`, it must also be Ok to cast `dst` back to
+// `$src`
 macro_rules! symmetric_cast_between {
     ($($src:ident => $($dst:ident),+);+;) => {
         mod symmetric_cast_between {
@@ -64,7 +66,8 @@ macro_rules! symmetric_cast_between {
                             quickcheck! {
                                 fn $dst(src: $src) -> TestResult {
                                     if let Ok(dst) = $dst::cast(src) {
-                                        TestResult::from_bool($src::cast(dst).is_ok())
+                                        TestResult::from_bool(
+                                            $src::cast(dst).is_ok())
                                     } else {
                                         TestResult::discard()
                                     }
@@ -112,8 +115,10 @@ macro_rules! from_float {
                                 let inf = _1 / _0;
                                 let neg_inf = -_1 / _0;
 
-                                assert_eq!($dst::cast(inf), Err(Error::Infinite));
-                                assert_eq!($dst::cast(neg_inf), Err(Error::Infinite));
+                                assert_eq!($dst::cast(inf),
+                                           Err(Error::Infinite));
+                                assert_eq!($dst::cast(neg_inf),
+                                           Err(Error::Infinite));
                             }
                          )+
                     }
@@ -129,7 +134,8 @@ macro_rules! from_float {
                                 let _0: $src = 0.;
                                 let nan = _0 / _0;
 
-                                assert_eq!($dst::cast(nan), Err(Error::NaN));
+                                assert_eq!($dst::cast(nan),
+                                           Err(Error::NaN));
                             }
                          )+
                     }

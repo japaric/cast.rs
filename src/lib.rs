@@ -1,7 +1,7 @@
 //! Ergonomic, checked cast functions for primitive types
 //!
-//! This crate provides one checked cast function for each numeric primitive. Use these functions
-//! to perform a cast from any other numeric primitive:
+//! This crate provides one checked cast function for each numeric primitive.
+//! Use these functions to perform a cast from any other numeric primitive:
 //!
 //! ```
 //! extern crate cast;
@@ -9,10 +9,12 @@
 //! use cast::{u8, u16, Error};
 //!
 //! # fn main() {
-//! // Infallible operations, like integer promotion, are equivalent to a normal cast with `as`
+//! // Infallible operations, like integer promotion, are equivalent to a normal
+//! // cast with `as`
 //! assert_eq!(u16(0u8), 0u16);
 //!
-//! // Everything else will return a `Result` depending on the success of the operation
+//! // Everything else will return a `Result` depending on the success of the
+//! // operation
 //! assert_eq!(u8(0u16), Ok(0u8));
 //! assert_eq!(u8(256u16), Err(Error::Overflow));
 //! assert_eq!(u8(-1i8), Err(Error::Underflow));
@@ -21,8 +23,9 @@
 //! # }
 //! ```
 //!
-//! There are no namespace problems between these functions, the "primitive modules" in `core`/`std`
-//! and the built-in primitive types, so all them can be in the same scope:
+//! There are no namespace problems between these functions, the "primitive
+//! modules" in `core`/`std` and the built-in primitive types, so all them can
+//! be in the same scope:
 //!
 //! ```
 //! extern crate cast;
@@ -40,7 +43,8 @@
 //! # }
 //! ```
 //!
-//! The checked cast functionality is also usable with type aliases via the `cast` static method:
+//! The checked cast functionality is also usable with type aliases via the
+//! `cast` static method:
 //!
 //! ```
 //! extern crate cast;
@@ -49,14 +53,14 @@
 //! // NOTE avoid shadowing `std::convert::From` - cf. rust-lang/rfcs#1311
 //! use cast::From as _0;
 //!
-//!
 //! # fn main() {
 //! assert_eq!(c_ulonglong::cast(0u8), 0u64);
 //! # }
 //! ```
 //!
-//! This crate also provides a `From` trait that can be used, for example, to create a generic
-//! function that accepts any type that can be infallibly casted to `u32`.
+//! This crate also provides a `From` trait that can be used, for example,
+//! to create a generic function that accepts any type that can be infallibly
+//! casted to `u32`.
 //!
 //! ```
 //! extern crate cast;
@@ -82,7 +86,7 @@
 //! This crate can be used without Rust's `std` crate by declaring it as
 //! follows in your `Cargo.toml`:
 //!
-//! ```toml
+//! ``` toml
 //! cast = { version = "*", default-features = false }
 //! ```
 
@@ -113,9 +117,11 @@ pub enum Error {
     Infinite,
     /// NaN value casted to a type that can't represent a NaN value
     NaN,
-    /// Source value is greater than the maximum value that the destination type can hold
+    /// Source value is greater than the maximum value that the destination type
+    /// can hold
     Overflow,
-    /// Source value is smaller than the minimum value that the destination type can hold
+    /// Source value is smaller than the minimum value that the destination type
+    /// can hold
     Underflow,
 }
 
@@ -274,7 +280,8 @@ macro_rules! from_float {
 
                         Err(if src != src {
                             Error::NaN
-                        } else if src == $src::INFINITY || src == $src::NEG_INFINITY {
+                        } else if src == $src::INFINITY ||
+                            src == $src::NEG_INFINITY {
                             Error::Infinite
                         } else if src < $dst::MIN as $src {
                             Error::Underflow

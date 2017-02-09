@@ -9,11 +9,16 @@ repository = "https://github.com/japaric/cast.rs"
 version = "0.1.0"
 
 [features]
+# Assume we should use `std` unless asked to do otherwise.
+default = ["std"]
 # For tests only
 unstable = ["quickcheck", "quickcheck_macros"]
+# Enable this to get a std::error::Error impl for convenient use with other
+# libraries.
+std = []
 
 [dependencies]
 # TODO these should be optional dev-dependencies.
 # cf https://github.com/rust-lang/cargo/issues/1596
-quickcheck = { version = "0.2.25", optional = true }
-quickcheck_macros = { version = "0.2.25", optional = true }
+quickcheck = { version = "0.4", optional = true }
+quickcheck_macros = { version = "0.4", optional = true }

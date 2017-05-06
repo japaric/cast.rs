@@ -9,13 +9,13 @@ env:       TARGET=x86_64-unknown-linux-gnu
 matrix:
   include:
     - env: TARGET=i686-unknown-linux-gnu
-    - env: TARGET=x86_64-unknown-linux-gnu RUST_BETA=1
+    - env: TARGET=x86_64-unknown-linux-gnu
       rust: beta
-    - env: TARGET=i686-unknown-linux-gnu RUST_BETA=1
+    - env: TARGET=i686-unknown-linux-gnu
       rust: beta
-    - env: TARGET=x86_64-unknown-linux-gnu RUST_NIGHTLY=1
+    - env: TARGET=x86_64-unknown-linux-gnu
       rust: nightly
-    - env: TARGET=i686-unknown-linux-gnu RUST_NIGHTLY=1
+    - env: TARGET=i686-unknown-linux-gnu
       rust: nightly
 
 before_install: set -e

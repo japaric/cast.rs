@@ -96,6 +96,8 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
+#![cfg_attr(feature = "x128", feature(i128_type, i128))]
+
 #[cfg(feature = "std")]
 extern crate core;
 
@@ -175,6 +177,9 @@ macro_rules! fns {
 }
 
 fns!(f32, f64, i8, i16, i32, i64, isize, u8, u16, u32, u64, usize);
+
+#[cfg(feature = "x128")]
+fns!(i128, u128);
 
 /// `$dst` can hold any value of `$src`
 macro_rules! promotion {
@@ -412,6 +417,54 @@ mod _64 {
     from_float! {
         f32  =>           i8, i16, i32, i64, isize, u8, u16, u32, u64, usize;
         f64  =>           i8, i16, i32, i64, isize, u8, u16, u32, u64, usize;
+    }
+}
+
+#[cfg(feature = "x128")]
+mod _x128 {
+    use {Error, From};
+
+    // Signed
+    promotion! {
+        i8    =>                              i128;
+        i16   =>                              i128;
+        i32   =>                              i128;
+        i64   =>                              i128;
+        isize =>                              i128;
+        i128  => f32, f64,                    i128;
+    }
+
+    half_promotion! {
+        i8    =>                                                              u128;
+        i16   =>                                                              u128;
+        i32   =>                                                              u128;
+        i64   =>                                                              u128;
+        isize =>                                                              u128;
+        i128  =>                                                              u128;
+    }
+
+    from_signed! {
+        i128  =>           i8, i16, i32, i64,       isize, u8, u16, u32, u64,       usize;
+    }
+
+    // Unsigned
+    promotion! {
+        u8    =>                              i128,                           u128;
+        u16   =>                              i128,                           u128;
+        u32   =>                              i128,                           u128;
+        u64   =>                              i128,                           u128;
+        usize =>                              i128,                           u128;
+        u128  => f32, f64,                                                    u128;
+    }
+
+    from_unsigned! {
+        u128 =>            i8, i16, i32, i64, i128, isize, u8, u16, u32, u64,       usize;
+    }
+
+    // Float
+    from_float! {
+        f32  => i128, u128;
+        f64  => i128, u128;
     }
 }
 

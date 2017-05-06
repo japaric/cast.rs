@@ -50,6 +50,24 @@ promote_and_back! {
     usize => f32, f64                                                    ;
 }
 
+// TODO uncomment this once quickcheck supports Arbitrary for i128/u128
+// https://github.com/BurntSushi/quickcheck/issues/162
+/*#[cfg(feature = "x128")]
+promote_and_back! {
+    i8    =>           i128      ;
+    i16   =>           i128      ;
+    i32   =>           i128      ;
+    isize =>           i128      ;
+    i64   =>           i128      ;
+    i128  => f32, f64            ;
+    u8    =>           i128, u128;
+    u16   =>           i128, u128;
+    u32   =>           i128, u128;
+    usize =>           i128, u128;
+    u64   =>           i128, u128;
+    u128  => f32, f64            ;
+}*/
+
 // If it's Ok to cast `src` to `$dst`, it must also be Ok to cast `dst` back to
 // `$src`
 macro_rules! symmetric_cast_between {
@@ -98,6 +116,13 @@ symmetric_cast_between! {
     u64   =>           i8, i16, i32, i64, isize;
     usize =>           i8, i16, i32, i64, isize;
 }
+
+// TODO uncomment this once quickcheck supports Arbitrary for i128/u128
+// https://github.com/BurntSushi/quickcheck/issues/162
+/*#[cfg(feature = "x128")]
+symmetric_cast_between! {
+    u128  => i8, i16, i32, isize, i64, i128;
+}*/
 
 macro_rules! from_float {
     ($($src:ident => $($dst:ident),+);+;) => {
@@ -149,3 +174,11 @@ from_float! {
     f32 => i8, i16, i32, i64, isize, u8, u16, u32, u64, usize;
     f64 => i8, i16, i32, i64, isize, u8, u16, u32, u64, usize;
 }
+
+// TODO uncomment this once quickcheck supports Arbitrary for i128/u128
+// https://github.com/BurntSushi/quickcheck/issues/162
+/*#[cfg(feature = "x128")]
+from_float! {
+    f32 => i128, u128;
+    f64 => i128, u128;
+}*/

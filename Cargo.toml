@@ -1,12 +1,12 @@
 [package]
-authors = ["Jorge Aparicio <japaricious@gmail.com>"]
+authors = ["Jorge Aparicio <jorge@japaric.io>"]
 description = "Ergonomic, checked cast functions for primitive types"
 documentation = "https://docs.rs/cast"
 keywords = ["checked", "cast", "primitive", "integer", "float"]
 license = "MIT OR Apache-2.0"
 name = "cast"
 repository = "https://github.com/japaric/cast.rs"
-version = "0.2.0"
+version = "0.2.1"
 
 [features]
 # Assume we should use `std` unless asked to do otherwise.

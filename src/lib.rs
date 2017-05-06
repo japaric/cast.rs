@@ -454,11 +454,11 @@ mod _x128 {
         u32   =>                              i128,                           u128;
         u64   =>                              i128,                           u128;
         usize =>                              i128,                           u128;
-        u128  => f32, f64,                                                    u128;
+        u128  =>      f64,                                                    u128;
     }
 
     from_unsigned! {
-        u128 =>            i8, i16, i32, i64, i128, isize, u8, u16, u32, u64,       usize;
+        u128 => f32,       i8, i16, i32, i64, i128, isize, u8, u16, u32, u64,       usize;
     }
 
     // Float

@@ -494,10 +494,11 @@ mod _x128 {
 
     // Float
     from_float! {
+        f32  => i128;
         f64  => i128, u128;
     }
     from_float_dst! {
-        f32  => i128, u128;
+        f32  => u128;
     }
 }
 

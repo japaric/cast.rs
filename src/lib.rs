@@ -302,6 +302,37 @@ macro_rules! from_float {
     }
 }
 
+/// From a float `$src` to an integer `$dst`, where $dst is large enough to contain
+/// all values of `$src`. We can't ever overflow here
+macro_rules! from_float_dst {
+    ($($src:ident => $($dst:ident),+);+;) => {
+        $(
+            $(
+                impl From<$src> for $dst {
+                    type Output = Result<$dst, Error>;
+
+                    #[inline]
+                    #[allow(unused_comparisons)]
+                    fn cast(src: $src) -> Self::Output {
+                        use core::{$dst, $src};
+
+                        Err(if src != src {
+                            Error::NaN
+                        } else if src == $src::INFINITY ||
+                            src == $src::NEG_INFINITY {
+                            Error::Infinite
+                        } else if ($dst::MIN == 0) && src < 0.0 {
+                            Error::Underflow
+                        } else {
+                            return Ok(src as $dst);
+                        })
+                    }
+                }
+            )+
+        )+
+    }
+}
+
 // PLAY TETRIS! ;-)
 
 #[cfg(target_pointer_width = "32")]
@@ -463,8 +494,10 @@ mod _x128 {
 
     // Float
     from_float! {
-        f32  => i128, u128;
         f64  => i128, u128;
+    }
+    from_float_dst! {
+        f32  => i128, u128;
     }
 }
 

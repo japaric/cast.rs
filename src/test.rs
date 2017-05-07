@@ -182,3 +182,9 @@ from_float! {
     f32 => i128, u128;
     f64 => i128, u128;
 }*/
+
+#[test]
+fn test_fl_conversion() {
+    use u128;
+    assert_eq!(u128(42.0f32), Ok(42));
+}

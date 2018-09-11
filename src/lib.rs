@@ -91,7 +91,6 @@
 //! ```
 
 #![deny(missing_docs)]
-#![deny(warnings)]
 #![allow(const_err)]
 
 #![cfg_attr(not(feature = "std"), no_std)]

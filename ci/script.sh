@@ -9,12 +9,8 @@ main() {
         cargo test --features x128 --target $TARGET --release
     else
         cargo build --target $TARGET --no-default-features
-
-        cargo test --target $TARGET
-        cargo test --target $TARGET --release
+        cargo build --target $TARGET
     fi
-
-
 }
 
 # fake Travis variables to be able to run this on a local machine

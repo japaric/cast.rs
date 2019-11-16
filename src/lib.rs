@@ -411,7 +411,7 @@ mod _32 {
 
     from_float! {
         f32, u32 =>        i8, i16, i32, isize, i64, u8, u16, u32, usize, u64;
-        f64, f32 =>        i8, i16, i32, isize, i64, u8, u16, u32, usize, u64;
+        f64, u64 =>        i8, i16, i32, isize, i64, u8, u16, u32, usize, u64;
     }
 }
 

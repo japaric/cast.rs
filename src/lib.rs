@@ -288,11 +288,20 @@ macro_rules! from_float {
                         } else if src == $src::INFINITY ||
                             src == $src::NEG_INFINITY {
                             Error::Infinite
-                        } else if src < $dst::MIN as $src {
-                            Error::Underflow
                         } else if src > $dst::MAX as $src {
                             Error::Overflow
-                        } else {
+                        } else if $dst::MIN == 0 {
+                            // when casting to unsigned integer, negative values close to 0 but
+                            // larger than 1.0 should be truncated to 0; this behavior matches
+                            // casting from a float to a signed integer
+                            if src <= -1.0 {
+                                Error::Underflow
+                            } else {
+                                return Ok(src as $dst);
+                            }
+                        } else if src < $dst::MIN as $src {
+                            Error::Underflow
+                        } else  {
                             return Ok(src as $dst);
                         })
                     }
@@ -310,7 +319,7 @@ macro_rules! from_float_dst {
         $(
             $(
                 impl From<$src> for $dst {
-                    type Output = Result<$dst, Error>;
+                     type Output = Result<$dst, Error>;
 
                     #[inline]
                     #[allow(unused_comparisons)]
@@ -322,7 +331,7 @@ macro_rules! from_float_dst {
                         } else if src == $src::INFINITY ||
                             src == $src::NEG_INFINITY {
                             Error::Infinite
-                        } else if ($dst::MIN == 0) && src < 0.0 {
+                        } else if ($dst::MIN == 0) && src <= -1.0 {
                             Error::Underflow
                         } else {
                             return Ok(src as $dst);

@@ -189,3 +189,18 @@ fn test_fl_conversion() {
     use u128;
     assert_eq!(u128(42.0f32), Ok(42));
 }
+
+#[test]
+fn gh16() {
+    assert_eq!(super::u64(-0.01_f64), Ok(0));
+    assert_eq!(super::u64(-0.99_f32), Ok(0));
+
+    assert_eq!(super::u32(-0.99_f64), Ok(0));
+    assert_eq!(super::u32(-0.01_f32), Ok(0));
+
+    assert_eq!(super::u64(0.01_f64), Ok(0));
+    assert_eq!(super::u64(0.99_f32), Ok(0));
+
+    assert_eq!(super::u32(0.99_f64), Ok(0));
+    assert_eq!(super::u32(0.01_f32), Ok(0));
+}

@@ -304,6 +304,7 @@ macro_rules! from_float {
 
 /// From a float `$src` to an integer `$dst`, where $dst is large enough to contain
 /// all values of `$src`. We can't ever overflow here
+#[cfg(feature = "x128")]
 macro_rules! from_float_dst {
     ($($src:ident => $($dst:ident),+);+;) => {
         $(

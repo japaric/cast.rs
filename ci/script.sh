@@ -1,16 +1,20 @@
 set -euxo pipefail
 
 main() {
-    cargo check --target $TARGET --no-default-features
-
-    cargo test --target $TARGET
-    cargo test --target $TARGET --release
-
     # not MSRV
     if [ $TRAVIS_RUST_VERSION != 1.13.0 ]; then
+        cargo check --target $TARGET --no-default-features
+
         cargo test --features x128 --target $TARGET
         cargo test --features x128 --target $TARGET --release
+    else
+        cargo build --target $TARGET --no-default-features
+
+        cargo test --target $TARGET
+        cargo test --target $TARGET --release
     fi
+
+
 }
 
 # fake Travis variables to be able to run this on a local machine

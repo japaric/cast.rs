@@ -81,6 +81,11 @@
 //! # }
 //! ```
 //!
+//! ## Minimal Supported Rust Version
+//!
+//! This crate is guaranteed to compile on stable Rust 1.13 and up. It *might* compile on older
+//! versions but that may change in any new patch release.
+//!
 //! ## Building without `std`
 //!
 //! This crate can be used without Rust's `std` crate by declaring it as
@@ -94,7 +99,7 @@
 #![deny(warnings)]
 #![allow(const_err)]
 #![cfg_attr(not(feature = "std"), no_std)]
-#![cfg_attr(feature = "x128", feature(i128_type, i128))]
+#![cfg_attr(all(feature = "x128", not(stable_i128)), feature(i128_type, i128))]
 
 #[cfg(feature = "std")]
 extern crate core;

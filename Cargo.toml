@@ -1,5 +1,6 @@
 [package]
 authors = ["Jorge Aparicio <jorge@japaric.io>"]
+build = "build.rs"
 description = "Ergonomic, checked cast functions for primitive types"
 documentation = "https://docs.rs/cast"
 keywords = ["checked", "cast", "primitive", "integer", "float"]
@@ -16,6 +17,9 @@ default = ["std"]
 std = []
 # Enable this for i128/u128 support
 x128 = []
+
+[build-dependencies]
+rustc_version = "0.2.3"
 
 [dev-dependencies]
 quickcheck = "0.9.0"

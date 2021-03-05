@@ -219,3 +219,10 @@ fn gh15() {
     assert_eq!(super::u16(16_f32.exp2()), Err(super::Error::Overflow));
     assert_eq!(super::u16(16_f64.exp2()), Err(super::Error::Overflow));
 }
+
+#[test]
+fn gh23() {
+    assert_eq!(super::u32(u32::MAX as f64), Ok(u32::MAX));
+    assert_eq!(super::u16(u16::MAX as f64), Ok(u16::MAX));
+    assert_eq!(super::u8(u8::MAX as f64), Ok(u8::MAX));
+}

@@ -101,8 +101,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(all(feature = "x128", not(stable_i128)), feature(i128_type, i128))]
 
-#[cfg(feature = "std")]
-extern crate core;
+
 
 #[cfg(test)]
 #[macro_use]
@@ -144,7 +143,7 @@ impl Error {
 }
 
 impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.description_helper())
     }
 }

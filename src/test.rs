@@ -6,7 +6,7 @@ macro_rules! promote_and_back {
             $(
                 mod $src {
                     mod from {
-                        use From;
+                        use crate::From;
 
                         $(
                             quickcheck! {
@@ -78,7 +78,7 @@ macro_rules! symmetric_cast_between {
                     mod and {
                         use quickcheck::TestResult;
 
-                        use From;
+                        use crate::From;
 
                         $(
                             quickcheck! {
@@ -130,7 +130,7 @@ macro_rules! from_float {
             mod $src {
                 mod inf {
                     mod to {
-                        use {Error, From};
+                        use crate::{Error, From};
 
                         $(
                             #[test]
@@ -151,7 +151,7 @@ macro_rules! from_float {
 
                 mod nan {
                     mod to {
-                        use {Error, From};
+                        use crate::{Error, From};
 
                         $(
                             #[test]

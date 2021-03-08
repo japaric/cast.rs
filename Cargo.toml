@@ -8,6 +8,7 @@ license = "MIT OR Apache-2.0"
 name = "cast"
 repository = "https://github.com/japaric/cast.rs"
 version = "0.2.3"
+edition = "2018"
 
 [features]
 # Assume we should use `std` unless asked to do otherwise.

@@ -162,7 +162,7 @@ pub trait From<Src> {
     type Output;
 
     /// Checked cast from `Src` to `Self`
-    fn cast(Src) -> Self::Output;
+    fn cast(_: Src) -> Self::Output;
 }
 
 macro_rules! fns {
@@ -417,7 +417,7 @@ mod _32 {
 
 #[cfg(target_pointer_width = "64")]
 mod _64 {
-    use {Error, From};
+    use crate::{Error, From};
 
     // Signed
     promotion! {

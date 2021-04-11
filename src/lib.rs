@@ -101,8 +101,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(all(feature = "x128", not(stable_i128)), feature(i128_type, i128))]
 
-#[cfg(feature = "std")]
-extern crate core;
+
 
 #[cfg(test)]
 #[macro_use]
@@ -144,7 +143,7 @@ impl Error {
 }
 
 impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.description_helper())
     }
 }
@@ -162,7 +161,7 @@ pub trait From<Src> {
     type Output;
 
     /// Checked cast from `Src` to `Self`
-    fn cast(Src) -> Self::Output;
+    fn cast(_: Src) -> Self::Output;
 }
 
 macro_rules! fns {
@@ -417,7 +416,7 @@ mod _32 {
 
 #[cfg(target_pointer_width = "64")]
 mod _64 {
-    use {Error, From};
+    use crate::{Error, From};
 
     // Signed
     promotion! {

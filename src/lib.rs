@@ -358,7 +358,7 @@ macro_rules! from_float_dst {
 
 #[cfg(target_pointer_width = "32")]
 mod _32 {
-    use {Error, From};
+    use crate::{Error, From};
 
     // Signed
     promotion! {
@@ -474,7 +474,7 @@ mod _64 {
 
 #[cfg(feature = "x128")]
 mod _x128 {
-    use {Error, From};
+    use crate::{Error, From};
 
     // Signed
     promotion! {

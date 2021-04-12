@@ -7,11 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [v0.2.5] - 2021-04-13
+
 ### Fixed
 
 - Build on platforms with 32-bit pointers
 
-## [v0.2.4] - 2021-04-11
+## [v0.2.4] - 2021-04-11 - YANKED
 
 ## [v0.2.3] - 2018-11-17
 

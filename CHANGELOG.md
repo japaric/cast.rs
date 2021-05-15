@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [v0.2.6] - 2021-05-15
+
+### Changed
+
+- Bumped `rustc_version` dependency
+
 ## [v0.2.5] - 2021-04-13
 
 ### Fixed
@@ -55,7 +61,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 Initial release
 
-[Unreleased]: https://github.com/japaric/cast.rs/compare/v0.2.3...HEAD
+[Unreleased]: https://github.com/japaric/cast.rs/compare/v0.2.6...HEAD
+[v0.2.6]: https://github.com/japaric/cast.rs/compare/v0.2.5...v0.2.6
+[v0.2.5]: https://github.com/japaric/cast.rs/compare/v0.2.4...v0.2.5
+[v0.2.4]: https://github.com/japaric/cast.rs/compare/v0.2.3...v0.2.4
 [v0.2.3]: https://github.com/japaric/cast.rs/compare/v0.2.2...v0.2.3
 [v0.2.2]: https://github.com/japaric/cast.rs/compare/v0.2.1...v0.2.2
 [v0.2.1]: https://github.com/japaric/cast.rs/compare/v0.2.0...v0.2.1

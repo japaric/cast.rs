@@ -186,7 +186,7 @@ from_float! {
 #[test]
 #[cfg(feature = "x128")]
 fn test_fl_conversion() {
-    use u128;
+    use crate::u128;
     assert_eq!(u128(42.0f32), Ok(42));
 }
 

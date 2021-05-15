@@ -32,11 +32,19 @@ jobs:
           override: true
 
       - uses: actions-rs/cargo@v1
+        if: matrix.rust != 'stable'
+        with:
+          command: build
+          args: --target ${{ matrix.target }}
+
+      - uses: actions-rs/cargo@v1
+        if: matrix.rust == 'stable'
         with:
           command: test
           args: --target ${{ matrix.target }}
 
       - uses: actions-rs/cargo@v1
+        if: matrix.rust == 'stable'
         with:
           command: test
           args: --target ${{ matrix.target }} --no-default-features

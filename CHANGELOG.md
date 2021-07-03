@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [v0.2.7] - 2021-07-03
+
+### Changed
+
+- Bumped `rustc_version` dependency to v0.4.0
+
 ## [v0.2.6] - 2021-05-15
 
 ### Changed

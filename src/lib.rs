@@ -99,9 +99,6 @@
 #![deny(warnings)]
 #![allow(const_err)]
 #![cfg_attr(not(feature = "std"), no_std)]
-#![cfg_attr(all(feature = "x128", not(stable_i128)), feature(i128_type, i128))]
-
-
 
 #[cfg(test)]
 #[macro_use]
@@ -180,7 +177,6 @@ macro_rules! fns {
 
 fns!(f32, f64, i8, i16, i32, i64, isize, u8, u16, u32, u64, usize);
 
-#[cfg(feature = "x128")]
 fns!(i128, u128);
 
 /// `$dst` can hold any value of `$src`
@@ -324,7 +320,6 @@ macro_rules! from_float {
 
 /// From a float `$src` to an integer `$dst`, where $dst is large enough to contain
 /// all values of `$src`. We can't ever overflow here
-#[cfg(feature = "x128")]
 macro_rules! from_float_dst {
     ($($src:ident => $($dst:ident),+);+;) => {
         $(
@@ -472,7 +467,6 @@ mod _64 {
     }
 }
 
-#[cfg(feature = "x128")]
 mod _x128 {
     use crate::{Error, From};
 

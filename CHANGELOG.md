@@ -31,7 +31,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-- Documented the guaranteed MRSV to be 1.13
+- Documented the guaranteed MSRV to be 1.13
 - The `x128` feature now works on *stable* Rust 1.26+
 
 ### Fixed

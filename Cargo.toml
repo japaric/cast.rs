@@ -17,4 +17,4 @@ default = ["std"]
 std = []
 
 [dev-dependencies]
-quickcheck = "0.9.0"
+quickcheck = "1.0.3"

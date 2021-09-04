@@ -88,10 +88,11 @@
 //! cast = { version = "*", default-features = false }
 //! ```
 
-#![deny(missing_docs)]
-#![deny(warnings)]
 #![allow(const_err)]
 #![cfg_attr(not(feature = "std"), no_std)]
+#![deny(missing_docs)]
+#![deny(unsafe_code)]
+#![deny(warnings)]
 
 #[cfg(test)]
 #[macro_use]

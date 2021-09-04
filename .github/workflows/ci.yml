@@ -52,7 +52,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: 1.26.0
+          toolchain: 1.31.0
           target: ${{ matrix.target }}
           override: true
 

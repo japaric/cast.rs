@@ -10,8 +10,6 @@ version = "0.3.0"
 edition = "2018"
 
 [features]
-# Assume we should use `std` unless asked to do otherwise.
-default = ["std"]
 # Enable this to get a std::error::Error impl for convenient use with other
 # libraries.
 std = []

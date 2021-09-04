@@ -7,9 +7,36 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-- The guaranteed MSRV is now 1.31.0.
-- The x128 feature has been removed; 128-bit integer support is now always
-  available by default.
+## [v0.3.0] - 2021-09-04
+
+### Changed
+
+- (breaking change) The guaranteed MSRV is now 1.31.0. ([#40])
+- (breaking change) The `std` Cargo feature is no longer enabled by default. ([#44])
+- 128-bit integer support is now always available by default. ([#37])
+
+[#37]: https://github.com/japaric/cast.rs/pull/37
+[#40]: https://github.com/japaric/cast.rs/pull/40
+[#44]: https://github.com/japaric/cast.rs/pull/44
+
+### Fixed
+
+- fixed casting `255f32` to `u8` returning `Error::Overflow` ([#23], [#42])
+- fixed intent of promote-and-back tests ([#39], [#43])
+
+[#23]: https://github.com/japaric/cast.rs/issues/23
+[#39]: https://github.com/japaric/cast.rs/issues/39
+[#42]: https://github.com/japaric/cast.rs/pull/42
+[#43]: https://github.com/japaric/cast.rs/pull/43
+
+### Removed
+
+- (breaking change) The `x128` Cargo feature has been removed
+- removed `rustc_version` and `semver` build dependencies ([#35], [#37])
+- removed all internal use of `unsafe` code ([#41])
+
+[#35]: https://github.com/japaric/cast.rs/issues/35
+[#41]: https://github.com/japaric/cast.rs/pull/41
 
 ## [v0.2.7] - 2021-07-03
 
@@ -71,7 +98,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 Initial release
 
-[Unreleased]: https://github.com/japaric/cast.rs/compare/v0.2.6...HEAD
+[Unreleased]: https://github.com/japaric/cast.rs/compare/v0.3.0...HEAD
+[v0.3.0]: https://github.com/japaric/cast.rs/compare/v0.2.7...v0.3.0
+[v0.2.7]: https://github.com/japaric/cast.rs/compare/v0.2.6...v0.2.7
 [v0.2.6]: https://github.com/japaric/cast.rs/compare/v0.2.5...v0.2.6
 [v0.2.5]: https://github.com/japaric/cast.rs/compare/v0.2.4...v0.2.5
 [v0.2.4]: https://github.com/japaric/cast.rs/compare/v0.2.3...v0.2.4

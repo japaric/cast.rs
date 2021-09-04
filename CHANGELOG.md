@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+- The guaranteed MSRV is now 1.46.0.
+- The x128 feature has been removed; 128-bit integer support is now always
+  available by default.
+
 ## [v0.2.7] - 2021-07-03
 
 ### Changed

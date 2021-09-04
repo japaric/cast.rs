@@ -4,8 +4,6 @@
 //! Use these functions to perform a cast from any other numeric primitive:
 //!
 //! ```
-//! extern crate cast;
-//!
 //! use cast::{u8, u16, Error};
 //!
 //! # fn main() {
@@ -28,8 +26,6 @@
 //! be in the same scope:
 //!
 //! ```
-//! extern crate cast;
-//!
 //! use std::u8;
 //! use cast::{u8, u16};
 //!
@@ -47,8 +43,6 @@
 //! `cast` static method:
 //!
 //! ```
-//! extern crate cast;
-//!
 //! use std::os::raw::c_ulonglong;
 //! // NOTE avoid shadowing `std::convert::From` - cf. rust-lang/rfcs#1311
 //! use cast::From as _0;
@@ -63,8 +57,6 @@
 //! casted to `u32`.
 //!
 //! ```
-//! extern crate cast;
-//!
 //! fn to_u32<T>(x: T) -> u32
 //!     // reads as: "where u32 can be casted from T with output u32"
 //!     where u32: cast::From<T, Output=u32>,
@@ -83,8 +75,9 @@
 //!
 //! ## Minimal Supported Rust Version
 //!
-//! This crate is guaranteed to compile on stable Rust 1.13 and up. It *might* compile on older
-//! versions but that may change in any new patch release.
+//! This crate is guaranteed to compile *as a dependency* on stable Rust 1.31 and up.
+//! It's not guaranteed that `cargo test`-ing this crate follows the MSRV.
+//! It *might* compile on older versions but that may change in any new patch release.
 //!
 //! ## Building without `std`
 //!

@@ -26,36 +26,29 @@ macro_rules! promote_and_back {
 promote_and_back! {
     i8    => f32, f64,     i16, i32, isize, i64, i128                            ;
     i16   => f32, f64,          i32, isize, i64, i128                            ;
-    i32   => f32, f64,                      i64, i128                            ;
-    isize => f32, f64,                      i64, i128                            ;
-    i64   => f32, f64,                           i128                            ;
+    i32   =>      f64,                      i64, i128                            ;
+    isize =>      f64,                      i64, i128                            ;
+    i64   =>                                     i128                            ;
     u8    => f32, f64,     i16, i32, isize, i64, i128, u16, u32, usize, u64, u128;
     u16   => f32, f64,          i32, isize, i64, i128,      u32, usize, u64, u128;
-    u32   => f32, f64,                      i64, i128,                  u64, u128;
-    usize => f32, f64,                      i64, i128,                  u64, u128;
-    u64   => f32, f64,                           i128,                       u128;
+    u32   =>      f64,                      i64, i128,                  u64, u128;
+    usize =>      f64,                      i64, i128,                  u64, u128;
+    u64   =>                                     i128,                       u128;
 }
 
 #[cfg(target_pointer_width = "64")]
 promote_and_back! {
     i8    => f32, f64,     i16, i32, i64, isize, i128                            ;
     i16   => f32, f64,          i32, i64, isize, i128                            ;
-    i32   => f32, f64,               i64, isize, i128                            ;
-    i64   => f32, f64,                           i128                            ;
-    isize => f32, f64,                           i128                            ;
+    i32   =>      f64,               i64, isize, i128                            ;
+    i64   =>                                     i128                            ;
+    isize =>                                     i128                            ;
     u8    => f32, f64,     i16, i32, i64, isize, i128, u16, u32, u64, usize, u128;
     u16   => f32, f64,          i32, i64, isize, i128,      u32, u64, usize, u128;
-    u32   => f32, f64,               i64, isize, i128,           u64, usize, u128;
-    u64   => f32, f64,                           i128,                       u128;
-    usize => f32, f64,                           i128,                       u128;
+    u32   =>      f64,               i64, isize, i128,           u64, usize, u128;
+    u64   =>                                     i128,                       u128;
+    usize =>                                     i128,                       u128;
 }
-
-// TODO uncomment this.
-/*
-promote_and_back! {
-    i128  => f32, f64            ;
-    u128  => f32, f64            ;
-}*/
 
 // If it's Ok to cast `src` to `$dst`, it must also be Ok to cast `dst` back to
 // `$src`

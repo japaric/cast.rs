@@ -281,10 +281,19 @@ macro_rules! from_float {
                             src == $src::NEG_INFINITY {
                             Error::Infinite
                         } else if {
-                            // we subtract 1 ULP (unit of least precision) here because some
-                            // lossy conversions like `u64::MAX as f64` round *up* and we want
-                            // to avoid this evaluating to false in that case
-                            let max = $src::from_bits(($dst::MAX as $src).to_bits() - 1);
+                            // this '$dst::BITS' works on 1.31.0 (MSRV)
+                            let dst_bits = core::mem::size_of::<$dst>() as u32 * 8;
+                            let lossless = dst_bits < core::$src::MANTISSA_DIGITS;
+
+                            let max = if lossless {
+                                $dst::MAX as $src
+                            } else {
+                                // we subtract 1 ULP (unit of least precision) here because some
+                                // lossy conversions like `u64::MAX as f64` round *up* and we want
+                                // to avoid the check below evaluating to false in that case
+                                $src::from_bits(($dst::MAX as $src).to_bits() - 1)
+                            };
+
                             src > max
                         } {
                             Error::Overflow
